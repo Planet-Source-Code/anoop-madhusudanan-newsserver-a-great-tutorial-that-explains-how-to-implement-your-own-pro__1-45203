@@ -1,0 +1,90 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>I-News Help</title>
+</head>
+
+<body>
+
+<h1>I-News Readme</h1>
+<hr>
+<p>By Anoop M <a href="http://www.inetsindia.com/anoopvision">http://www.inetsindia.com/anoopvision</a></p>
+<p><b>1) About the server and clients</b></p>
+<p>I-News server is a TCP/IP based server suit, with limited functionality to
+serve news over a network. Rather than working as a news server, this application is to demonstrate the designing and implementation of of custom application protocols over TCP/IP. This package contains the Server in the server
+directory, along with two clients. In the folder ClientGUI, there is a visual
+client, and in the folder Client, there is a simple text based client.</p>
+<p>The server and client exchanges messages as plain text. Each argument is
+separated with ASCII character 10 (chr$(10)) and each lines are separated with
+ASCII character 13 (chr$(13)) . It is possible to send and receive data in
+various chunks, because both server and client supports buffered collection of
+data. That is, even after receiving the data, the algorithm will keep data in a
+buffer as long as it receives a chr$(13) character. Then, the command is
+executed.</p>
+<p>For example, data can be send like this (&amp; represents the appending
+operator in VB, and <i>ws</i> is a socket).</p>
+<p><i><font color="#008000">ws.senddata &quot;login&quot; &amp; chr$(10) &amp;
+&quot;user&quot; &amp; chr$(10) &amp; &quot;password&quot; &amp; chr$(13)</font></i></p>
+<p>Also, sending data as two chunks has the same result as above.</p>
+<p><i><font color="#008000">ws.senddata &quot;login&quot; &amp; chr$(10) &amp;
+&quot;user&quot;</font></i></p>
+<p><i><font color="#008000">ws.senddata chr$(10) &amp; &quot;password&quot;
+&amp; chr(13)</font></i></p>
+<hr>
+<p><b>2) How the system works.</b></p>
+<ul>
+  <li>Step 1 - The client establishes a connection using winsock, normally to
+    port 1001 (eg: <i><font color="#008000">ws.connect &quot;localhost&quot;,
+    1001</font></i>)
+    <ul>
+      <li>The server may accept the connection to bind it to a random socket
+        using <i>ws(index).accept (requestid)</i></li>
+    </ul>
+  </li>
+  <li>Step 2 - The client sends a signup or login message (eg to login: <font color="#008000"><i>ws.senddata
+    &quot;login&quot; &amp; chr$(10) &amp; &quot;user&quot; &amp; chr$(10) &amp;
+    &quot;password&quot; &amp; chr$(13) </i></font>)
+    <ul>
+      <li>The server may send an &quot;ok&quot; or &quot;err&quot; message back</li>
+    </ul>
+  </li>
+  <li>Step 3 - When &quot;ok&quot; is received by the client, &quot;cat&quot;
+    message is sent to get categories
+    <ul>
+      <li>The server sends a list of all categories back in the format
+        &quot;cat&quot; &amp; chr$(10) &amp; &quot;name&quot; &amp; chr$(10)
+        &amp; &quot;id&quot;</li>
+    </ul>
+  </li>
+  <li>Step 4 - When the client receives the &quot;cat&quot; message back, it
+    will cache all the categories and its ids&nbsp;</li>
+  <li>Step 5 - To receive news in a category, the client issues the
+    &quot;news&quot; message along with id of the category (eg: <font color="#008000">ws.senddata
+    &quot;news&quot; &amp; chr$(10) &amp; &quot;1&quot;</font>)
+    <ul>
+      <li>The server may send back the news in each category, in the format
+        &quot;newssubject&quot; &amp; chr$(10) &amp; &quot;newsid&quot; &amp;
+        chr$(10) &amp; &quot;categoryid&quot;</li>
+    </ul>
+  </li>
+  <li>Step 7 - The client may cache all news headings</li>
+  <li>Step 8 - To receive data of a news, the client issues the &quot;newsdat&quot;
+    message along with id of the news, in the format "newsdata" &amp; Chr$(10) &amp;
+    &quot;newsid&quot;
+    <ul>
+      <li>The server may send back news data in the format "newsdata" &amp; Chr$(10) &amp;
+        &quot;subject&quot; &amp; Chr$(10) &amp; &quot;details&quot; &amp; Chr$(10) &amp;
+        &quot;date&quot; </li>
+    </ul>
+  </li>
+  <li>Step 9 - The client may show the details of the news, when it receives the
+    news data command</li>
+</ul>
+
+</body>
+
+</html>
